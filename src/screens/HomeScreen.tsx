@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { ActivityIndicator, StyleSheet, View } from "react-native"
 import { Button, Icon, Input, Text } from "react-native-elements"
 import { StockCard } from "../components/StockCard"
 import { useStockQuote } from "../hooks/useStockQuote"
+import { QuoteResponse } from "../types"
+import { HomeNavigationProp } from "../types/StackNavigation"
+import { StockContext } from "../utils/StockContext"
 
-export const HomeScreen: React.FC = () => {
+type Props = {
+  navigation: HomeNavigationProp
+}
+export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [input, setInput] = useState("")
   const [clean, setClean] = useState(true)
   const [endpoint, setEndpoint] = useState("")
 
   const { stock, error, loading } = useStockQuote(endpoint)
+  const { setStock } = useContext(StockContext)
 
   useEffect(() => {
     if (clean && loading) {
@@ -28,6 +35,11 @@ export const HomeScreen: React.FC = () => {
     return
   }
 
+  const handleCardItemPress = (stock: QuoteResponse) => {
+    setStock(stock)
+    navigation.navigate("StockDetails")
+  }
+
   return (
     <View style={styles.container}>
       <ActivityIndicator animating={loading} size="large" />
@@ -41,7 +53,7 @@ export const HomeScreen: React.FC = () => {
       </Text>
       {stock && (
         <View style={styles.wrapper}>
-          <StockCard quotes={stock} />
+          <StockCard quotes={stock} handlePress={handleCardItemPress} />
         </View>
       )}
       <Input
