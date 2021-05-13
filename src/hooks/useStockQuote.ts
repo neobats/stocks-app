@@ -17,13 +17,10 @@ export const useStockQuote = (symbol: string) => {
 
   useEffect(() => {
     const uri = compose(encodeURI, createProductionEndpoint)(symbol)
-    console.log(uri)
     const fetcher = async () => {
       setLoading(true)
-      console.log(symbol)
       if (!symbol) {
         setLoading(false)
-        console.log("returning prematurely", { stock, error, loading })
         return {
           stock,
           error,

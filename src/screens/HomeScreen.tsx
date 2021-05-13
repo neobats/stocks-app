@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ActivityIndicator, StyleSheet, View } from "react-native"
 import { Button, Icon, Input, Text } from "react-native-elements"
 import { StockCard } from "../components/StockCard"
 import { useStockQuote } from "../hooks/useStockQuote"
 import { QuoteResponse } from "../types"
 import { HomeNavigationProp } from "../types/StackNavigation"
-import { StockContext } from "../utils/StockContext"
 
 type Props = {
   navigation: HomeNavigationProp
@@ -16,7 +15,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [endpoint, setEndpoint] = useState("")
 
   const { stock, error, loading } = useStockQuote(endpoint)
-  const { setStock } = useContext(StockContext)
 
   useEffect(() => {
     if (clean && loading) {
@@ -36,8 +34,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   const handleCardItemPress = (stock: QuoteResponse) => {
-    setStock(stock)
-    navigation.navigate("StockDetails")
+    navigation.navigate("StockDetails", { stock })
   }
 
   return (
