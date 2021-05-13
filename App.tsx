@@ -1,39 +1,42 @@
-import { StatusBar } from "expo-status-bar"
-import React, { useState } from "react"
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { NavigationContainer } from "@react-navigation/native"
+import { createStackNavigator } from "@react-navigation/stack"
+import React from "react"
 import { SafeAreaProvider } from "react-native-safe-area-context"
+import { useStockQuote } from "./src/hooks/useStockQuote"
+import { HomeScreen, StockDetailScreen } from "./src/screens"
+import { StockContext } from "./src/utils/StockContext"
 
 export default function App() {
-  const [input, setInput] = useState("")
-  const [confirmed, setConfirmed] = useState("")
+  const Stack = createStackNavigator()
 
-  const handlePress = () => {
-    setConfirmed(input)
-  }
+  let { stock } = useStockQuote("")
+
   return (
     <SafeAreaProvider>
-      <View style={styles.container}>
-        <Text>Open up App.tsx to start working on your app!</Text>
-        <TextInput defaultValue={input} onChangeText={setInput} />
-        <TouchableOpacity onPress={handlePress}>Go</TouchableOpacity>
-        <Text>{confirmed}</Text>
-        <StatusBar style="auto" />
-      </View>
+      <StockContext.Provider
+        value={
+          stock
+            ? {
+                stocks: stock,
+                setStocks: (newStock) => {
+                  stock = newStock
+                },
+              }
+            : {
+                stocks: null,
+                setStocks: () => {
+                  return
+                },
+              }
+        }
+      >
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Details" component={StockDetailScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </StockContext.Provider>
     </SafeAreaProvider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-})
